@@ -1,0 +1,167 @@
+Pengenalan Asynchronous
+
+Apa itu Synchronous?
+Program dalam JavaScript secara default akan dieksekusi baris per baris
+Secara default, proses di JavaScript akan dieksekusi secara Synchronous, artinya baris selanjutnya akan dieksekusi setelah baris sebelumnya selesai dikerjakan
+Proses Synchronous juga biasa disebut Blocking, karena harus menunggu tiap proses selesai, baru proses selanjutnya bisa dilakukan
+
+Contoh Synchronous 
+
+Apa itu Asynchronous?
+Walaupun secara default proses di JavaScript dieksekusi secara Synchronous, namun kita bisa membuatnya menjadi Asynchronous.
+Berbeda dengan proses Synchronous, pada proses Asynchronous, JavaScript tidak akan menunggu proses tersebut selesai, melainkan JavaScript akan melanjutkan baris selanjutnya, tanpa harus menunggu proses Asynchronous selesai.
+Proses Asynchronous juga biasa disebut Non-Blocking.
+
+Contoh Asynchronous
+
+Callback
+
+Apa itu Callback?
+Callback, merupakan mekanisme untuk memanggil kembali kode yang ada di program dari proses Async
+Callback biasanya dibuat dalam bentuk function as parameter, dan parameter function tersebut akan dieksekusi saat proses Async selesai
+Dengan menggunakan Callback, program bisa menerima informasi yang dibutuhkan dari proses yang berjalan secara Async
+
+Async Method
+Ada banyak method Async yang terdapat di JavaScript, yang akan kita bahas kali ini adalah :
+setTimeout(callback, timeInMilis), digunakan untuk menjalankan proses Async sekali dalam waktu tertentu.
+setInterval(callback, timeInMilis), digunakan untuk menjalankan proses Async secara periodik dalam waktu tertentu.
+
+Kode : setTimeout
+<body>
+<script>
+
+    function addElement(){
+        const header = document.createElement("h1");
+        header.textContent = "Programmer Zaman Now";
+
+        document.body.appendChild(header);
+    }
+
+    setTimeout(addElement, 5000);
+    console.info("Program Selesai");
+
+</script>
+</body>
+
+Kode : setInterval
+<body>
+<h1 id="header"></h1>
+<script>
+
+    function setTime(){
+        const header = document.getElementById("header");
+        header.textContent = new Date().toString();
+    }
+
+    setInterval(setTime, 1000);
+    console.info("Program Selesai");
+
+</script>
+</body>
+
+AJAX
+Apa itu AJAX?
+AJAX singkatan dari Asynchronous JavaScript and XML
+AJAX biasanya digunakan untuk mengambil atau mengirim data ke URL lain
+Untuk membuat AJAX, kita bisa menggunakan class XMLHttpRequest
+https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest 
+
+Cara Kerja AJAX
+
+Kode : Membuat AJAX
+<body>
+<h1 id="response"></h1>
+<script>
+
+    const ajax = new XMLHttpRequest();
+    ajax.open("GET", "api/hello.json");
+    ajax.addEventListener("load", function (){
+        const json = JSON.parse(ajax.responseText);
+
+        const header = document.getElementById("response");
+        header.textContent = json.response;
+    });
+    ajax.send();
+
+</script>
+</body>
+
+Menerima Data di AJAX
+AJAX biasanya digunakan untuk mengirim data ke Server atau menerima data dari Server
+Tiap request AJAX yang dilakukan, biasanya kita ingin mendapat informasi response yang diberikan oleh Server
+Kita tidak bisa langsung mengambil response AJAX, karena proses AJAX adalah Async, sehingga kita perlu menunggu sampai proses Async nya selesai.
+Untuk mendapatkan informasi AJAX, kita bisa menggunakan AJAX Callback, yang akan dieksekusi setelah proses AJAX selesai
+Untuk menambahkan AJAX Callback, kita bisa tambahkan pada event load
+https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/load_event 
+Dan untuk mengambil datanya dari server, kita bisa menggunakan property responseText
+
+Kode : Menerima Data di AJAX
+<body>
+<h1 id="response"></h1>
+<script>
+
+    const ajax = new XMLHttpRequest();
+    ajax.open("GET", "api/hello.json");
+    ajax.addEventListener("load", function (){
+        const json = JSON.parse(ajax.responseText);
+
+        const header = document.getElementById("response");
+        header.textContent = json.response;
+    });
+    ajax.send();
+
+</script>
+</body>
+
+Response Status di AJAX
+
+Response Status
+AJAX adalah proses komunikasi Client dan Server
+Dalam komunikasi Client dan Server, kita tidak bisa selalu menganggap proses tersebut akan berjalan lancar.
+Akan ada banyak hal-hal yang bisa mengganggu proses AJAX yang bisa menyebabkan error, seperti; koneksi internet bermasalah, error dari server, data dari client tidak valid, dan lain-lain.
+Server biasanya akan mengirimkan HTTP Status Code yang sesuai dengan jenis response nya, seperti yang sudah dibahas di materi HTTP
+Untuk mengetahui status response dari Server, kita bisa menggunakan property status
+https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/status 
+
+Response Status di AJAX
+<body>
+<h1 id="response"></h1>
+<script>
+
+    function displayResponse(json) {
+        const header = document.getElementById("response");
+        header.textContent = json.response;
+    }
+
+    const ajax = new XMLHttpRequest();
+    ajax.onreadystatechange = function (){
+        console.info(`Ready State Change ${ajax.readyState}`);
+    };
+    // ajax.open("GET", "api/hello.json");
+    ajax.open("GET", "api/salah.json");
+    ajax.addEventListener("load", function () {
+        if (ajax.status === 200) {
+            const json = JSON.parse(ajax.responseText);
+            displayResponse(json);
+        } else {
+            displayResponse({
+                response: `Terjadi Kesalahan dengan status ${ajax.status}`
+            })
+        }
+    });
+    ajax.send();
+
+</script>
+</body>
+
+State di AJAX
+AJAX memiliki tahapan state, dimana kita bisa mendapatkan banyak sekali state di Ajax menggunakan property readyState
+Property readyState mengembalikan nilai number, dimana tiap number merupakan representasi dari statenya
+
+Daftar State
+
+Ready State Change Event
+Jika kita ingin mendengarkan perubahan yang terjadi pada state, kita bisa menggunakan event readystatechange
+https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/onreadystatechange 
+
+Kode : Ready State Change Event
