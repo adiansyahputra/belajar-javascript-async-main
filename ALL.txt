@@ -165,3 +165,356 @@ Jika kita ingin mendengarkan perubahan yang terjadi pada state, kita bisa menggu
 https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/onreadystatechange 
 
 Kode : Ready State Change Event
+<body>
+<h1 id="response"></h1>
+<script>
+
+    function displayResponse(json) {
+        const header = document.getElementById("response");
+        header.textContent = json.response;
+    }
+
+    const ajax = new XMLHttpRequest();
+    ajax.onreadystatechange = function (){
+        console.info(`Ready State Change ${ajax.readyState}`);
+    };
+    // ajax.open("GET", "api/hello.json");
+    ajax.open("GET", "api/salah.json");
+    ajax.addEventListener("load", function () {
+        if (ajax.status === 200) {
+            const json = JSON.parse(ajax.responseText);
+            displayResponse(json);
+        } else {
+            displayResponse({
+                response: `Terjadi Kesalahan dengan status ${ajax.status}`
+            })
+        }
+    });
+    ajax.send();
+
+</script>
+</body>
+
+Hookbin
+Sebelum kita melanjutkan belajar AJAX, kita perlu bantuan Server sebagai tujuan pengiriman data di AJAX
+Kita akan menggunakan salah satu website yang gratis dan lumayan populer untuk menerima data AJAX yang kita kirim, yaitu Hookbin
+Hookbin adalah aplikasi yang bisa digunakan untuk menerima request HTTP dan menyimpan datanya, dengan ini kita bisa menggunakan Hookbin untuk melihat detail dari data AJAX yang kita kirim
+https://hookbin.com/ 
+
+Alternative Lain
+Jika teman-teman mendapat masalah ketika mengakses website Hookbin, ada banyak alternatif lain website seperti Hookbin, misalnya :
+https://requestbin.net/ 
+https://pipedream.com/requestbin 
+https://beeceptor.com/ 
+
+Mengirim Data dengan AJAX
+Saat kita menggunakan AJAX, biasanya bukan hanya untuk mengambil data dari Server
+Kadang kita juga ingin mengirim data dari Client ke Server, misalnya kita membaca semua data di Web Form, lalu mengirimkan ke Server menggunakan AJAX
+Untuk melakukan ini, kita bisa menambahkan parameter data yang akan kita kirim pada method send() milik XMLHttpRequest
+https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/send 
+
+Kode : Web Form
+<body>
+<form>
+    <label for="username">Username:
+        <input type="text" id="username" name="username">
+    </label>
+    <br>
+    <label for="password">Password:
+        <input type="password" id="password" name="password">
+    </label>
+    <br>
+    <input type="button" id="login" value="Login">
+</form>
+<h1 id="response"></h1>
+<script>
+
+    function doLogin() {
+        const ajax = new XMLHttpRequest();
+        ajax.open("POST", "https://hookb.in/r19B7Kmn3PSqk2XXkwqb");
+        ajax.onload = function () {
+            const response = document.getElementById("response");
+            response.innerText = ajax.responseText;
+        }
+        ajax.setRequestHeader("Content-Type", "application/json");
+
+        const json = {
+            username: document.getElementById("username").value,
+            password: document.getElementById("password").value
+        };
+
+        ajax.send(JSON.stringify(json));
+    }
+
+    document.getElementById("login").onclick = doLogin;
+
+</script>
+</body>
+
+Kode : Mengirim Data dengan AJAX
+<script>
+
+    function doLogin() {
+        const ajax = new XMLHttpRequest();
+        ajax.open("POST", "https://hookb.in/r19B7Kmn3PSqk2XXkwqb");
+        ajax.onload = function () {
+            const response = document.getElementById("response");
+            response.innerText = ajax.responseText;
+        }
+        ajax.setRequestHeader("Content-Type", "application/json");
+
+        const json = {
+            username: document.getElementById("username").value,
+            password: document.getElementById("password").value
+        };
+
+        ajax.send(JSON.stringify(json));
+    }
+
+    document.getElementById("login").onclick = doLogin;
+
+</script>
+
+URL Search Param
+Selain format JSON, kadang saat mengirim data menggunakan AJAX, kita hanya mengirim dalam bentuk Query Parameter
+Pada kasus ini, kita bisa saja mengubah url nya dengan menambahkan Query Parameter, namun ada cara yang lebih mudah, yaitu menggunakan object URLSearchParam
+Kita bisa memanfaatkan object URLSearchParam sebelum membuat URL
+https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams 
+
+Kode : URL Search Param
+<body>
+<form>
+    <label for="search">Search:
+        <input type="text" id="search" name="search">
+    </label>
+    <br>
+    <input type="button" id="searchButton" value="Search">
+</form>
+<h1 id="response"></h1>
+<script>
+
+    function doSearch() {
+        const ajax = new XMLHttpRequest();
+
+        const param = new URLSearchParams();
+        param.append("search", document.getElementById("search").value);
+        param.append("filter", document.getElementById("search").value);
+
+        ajax.open("GET", `https://hookb.in/r19B7Kmn3PSqk2XXkwqb?${param.toString()}`);
+        ajax.onload = function () {
+            const response = document.getElementById("response");
+            response.innerText = ajax.responseText;
+        }
+
+        ajax.send();
+    }
+
+    document.getElementById("searchButton").onclick = doSearch;
+
+</script>
+</body>
+
+Form Data dengan AJAX
+Selain JSON dan Query Param, kadang kita juga mengirim Form Data dari Client ke Server menggunakan AJAX
+Untuk kasus ini kita tetap bisa menggunakan URLSearchParam
+Namun object URLSearchParam nya kita kirim di method send()
+
+Kode : Form Data dengan AJAX
+<body>
+<form>
+    <label for="username">Username:
+        <input type="text" id="username" name="username">
+    </label>
+    <br>
+    <label for="password">Password:
+        <input type="password" id="password" name="password">
+    </label>
+    <br>
+    <input type="button" id="login" value="Login">
+</form>
+<h1 id="response"></h1>
+<script>
+
+    function doLogin() {
+        const ajax = new XMLHttpRequest();
+        ajax.open("POST", "https://hookb.in/r19B7Kmn3PSqk2XXkwqb");
+        ajax.onload = function () {
+            const response = document.getElementById("response");
+            response.innerText = ajax.responseText;
+        }
+        ajax.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        const form = new URLSearchParams();
+        form.append("username", document.getElementById("username").value);
+        form.append("password", document.getElementById("password").value);
+
+        ajax.send(form);
+    }
+
+    document.getElementById("login").onclick = doLogin;
+
+</script>
+</body>
+
+Upload File dengan AJAX
+Selain menggunakan JSON, Query Param, Form, kadang kita butuh mengirim file ke Server
+Untuk mengirim file ke Server, kita perlu menggunakan object Form Data, lalu kita perlu menambahkan object File ke dalam FormData tersebut
+https://developer.mozilla.org/en-US/docs/Web/API/FormData 
+https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file 
+https://developer.mozilla.org/en-US/docs/Web/API/File 
+https://developer.mozilla.org/en-US/docs/Web/API/FileList 
+
+Kode : Upload File dengan AJAX
+<body>
+<h1>Register</h1>
+<form>
+    <label for="username">Username:
+        <input type="text" id="username" name="username">
+    </label>
+    <br>
+    <label for="name">Name:
+        <input type="text" id="name" name="name">
+    </label>
+    <br>
+    <label for="profile">Profile:
+        <input type="file" id="profile" name="profile">
+    </label>
+    <br>
+    <input type="button" id="register" value="Register">
+</form>
+<h1 id="response"></h1>
+<script>
+
+    function doLogin() {
+        const ajax = new XMLHttpRequest();
+        ajax.open("POST", "https://hookb.in/r19B7Kmn3PSqk2XXkwqb");
+        ajax.onload = function () {
+            const response = document.getElementById("response");
+            response.innerText = ajax.responseText;
+        }
+
+        const form = new FormData();
+        form.append("username", document.getElementById("username").value);
+        form.append("name", document.getElementById("name").value);
+
+        const files = document.getElementById("profile").files;
+        const firstFile = files.item(0);
+
+        form.append("profile", firstFile);
+
+        ajax.send(form);
+    }
+
+    document.getElementById("register").onclick = doLogin;
+
+</script>
+</body>
+
+Promise
+
+Apa itu Promise?
+Promise merupakan proxy untuk sebuah nilai di masa depan (Future) yang belum diketahui saat pembuatan Promise tersebut.
+Biasa Promise digunakan sebagai proxy untuk proses Async.
+Penggunaan Promise sangat mudah, dan lebih mirip dengan kode Synchronous.
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise 
+
+Masalah dengan Callback
+
+Promise State
+ state
+pending
+fulfilled
+rejected
+result
+undefined
+value
+error
+
+Kode : Membuat Promise
+<body>
+
+<table>
+    <tbody>
+    <tr>
+        <td>Id :</td>
+        <td id="id"></td>
+    </tr>
+    <tr>
+        <td>Name :</td>
+        <td id="name"></td>
+    </tr>
+    <tr>
+        <td>Price :</td>
+        <td id="price"></td>
+    </tr>
+    </tbody>
+</table>
+
+<script>
+
+    function getProduct(product) {
+        return new Promise(function (resolve, reject) {
+
+            const ajax = new XMLHttpRequest();
+            ajax.open("GET", `api/${product}.json`);
+            ajax.onload = function () {
+                if (ajax.status === 200) {
+                    resolve(ajax.responseText);
+                } else {
+                    reject(`Error Get Product with response : ${ajax.status}`);
+                }
+            };
+            ajax.send();
+
+        });
+    }
+
+    getProduct("product")
+        .then(function (response) {
+            return JSON.parse(response);
+        })
+        .then(function (json) {
+            document.getElementById("id").textContent = json.id;
+            document.getElementById("name").textContent = json.name;
+            document.getElementById("price").textContent = json.price;
+        })
+        .catch(function (error) {
+            document.getElementById("id").textContent = error;
+            document.getElementById("name").textContent = error;
+            document.getElementById("price").textContent = error;
+        })
+        .finally(function () {
+            console.info("Finally");
+        })
+
+</script>
+
+</body>
+
+Kode : AJAX dengan Promise
+getProduct("product")
+        .then(function (response) {
+            return JSON.parse(response);
+        })
+        .then(function (json) {
+            document.getElementById("id").textContent = json.id;
+            document.getElementById("name").textContent = json.name;
+            document.getElementById("price").textContent = json.price;
+        })
+        .catch(function (error) {
+            document.getElementById("id").textContent = error;
+            document.getElementById("name").textContent = error;
+            document.getElementById("price").textContent = error;
+        })
+        .finally(function () {
+            console.info("Finally");
+        })
+
+Promise Method
+Promise memiliki tiga method yang bisa kita gunakan 
+then() untuk mendapatkan atau mengubah data ketika Promise sukses
+catch() untuk mendapatkan data error ketika Promise gagal
+finally() akan dieksekusi ketika terjadi sukses atau gagal pada Promise
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise#instance_methods 
+
+Kode : Promise Method
